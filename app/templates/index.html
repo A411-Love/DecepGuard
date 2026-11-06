@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DecepGuard | Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="layout">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <h2 class="logo">DecepGuard</h2>
+            <p class="subtitle">SECURITY PLATFORM</p>
+
+            <nav>
+                <a href="/" class="active">Dashboard</a>
+                <a href="#">Honeypots</a>
+                <a href="#">Attack Events</a>
+                <a href="#">Alerts</a>
+                <a href="#">Incidents</a>
+                <a href="#">Reports</a>
+                <a href="#">User Management</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                Deception Technology
+            </div>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Security monitoring overview</p>
+                </div>
+
+                <div class="admin">
+                    Administrator
+                </div>
+            </header>
+
+            <!-- Statistics -->
+            <section class="stats">
+
+                <div class="stat-card">
+                    <p>Total Honeypots</p>
+                    <h2>03</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Attack Events</p>
+                    <h2>128</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Active Alerts</p>
+                    <h2>12</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Open Incidents</p>
+                    <h2>05</h2>
+                </div>
+
+            </section>
+
+            <!-- Recent Events -->
+            <section class="events">
+
+                <h2>Recent Security Events</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source IP</th>
+                            <th>Service</th>
+                            <th>Activity</th>
+                            <th>Severity</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td>192.168.1.25</td>
+                            <td>SSH</td>
+                            <td>Login Attempt</td>
+                            <td class="high">High</td>
+                        </tr>
+
+                        <tr>
+                            <td>192.168.1.30</td>
+                            <td>HTTP</td>
+                            <td>Port Scanning</td>
+                            <td class="medium">Medium</td>
+                        </tr>
+
+                        <tr>
+                            <td>192.168.1.45</td>
+                            <td>FTP</td>
+                            <td>Connection Attempt</td>
+                            <td class="low">Low</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p class="notice">
+                    Demonstration data only — no real attacks have been captured.
+                </p>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</body>
+</html>
