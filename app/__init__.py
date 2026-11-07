@@ -1,10 +1,9 @@
 import os
 from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import URL
 from dotenv import load_dotenv
 
-from app.extensions import db
+from app.extensions import db, login_manager
 
 
 def create_app():
@@ -26,6 +25,16 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+
+    login_manager.init_app(app)
+    login_manager.login_view = "auth.login"
+    from app.auth import auth
+    app.register_blueprint(auth, url_prefix="/auth")
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        from app.models import User
+        return db.session.get(User, int(user_id))
 
     @app.route("/")
     def home():
