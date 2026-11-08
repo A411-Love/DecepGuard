@@ -3,8 +3,7 @@ from flask import Flask, render_template
 from sqlalchemy import URL
 from dotenv import load_dotenv
 
-from app.extensions import db, login_manager
-
+from app.extensions import db, login_manager, csrf
 
 def create_app():
     load_dotenv()
@@ -25,6 +24,7 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+    csrf.init_app(app)
 
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
