@@ -4,6 +4,7 @@ from app.models import User
 from app.auth.forms import RegistrationForm
 from flask_login import login_user, logout_user, login_required, current_user
 from app.auth.forms import LoginForm
+from app.auth.permissions import role_required
 
 auth = Blueprint("auth", __name__)
 
@@ -40,6 +41,17 @@ def register():
         return redirect(url_for("home"))
 
     return render_template("auth/register.html", form=form)
+
+@auth.route("/admin-test")
+@role_required("admin")
+def admin_test():
+    return "Admin access granted!"
+
+
+@auth.route("/analyst-test")
+@role_required("admin", "analyst")
+def analyst_test():
+    return "Analyst access granted!"
 
 @auth.route("/login", methods=["GET", "POST"])
 def login():
