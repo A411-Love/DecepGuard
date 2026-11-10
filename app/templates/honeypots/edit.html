@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Honeypot | DecepGuard</title>
+</head>
+<body>
+
+    <h1>Edit Honeypot</h1>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name() }}
+            {% for error in form.name.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.honeypot_type.label }}<br>
+            {{ form.honeypot_type() }}
+        </p>
+
+        <p>
+            {{ form.ip_address.label }}<br>
+            {{ form.ip_address() }}
+        </p>
+
+        <p>
+            {{ form.port.label }}<br>
+            {{ form.port() }}
+        </p>
+
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description() }}
+        </p>
+
+        <p>
+            {{ form.status.label }}<br>
+            {{ form.status() }}
+        </p>
+
+        {{ form.submit() }}
+    </form>
+
+    <p>
+        <a href="{{ url_for('honeypots.list_honeypots') }}">
+            Back to Honeypots
+        </a>
+    </p>
+
+</body>
+</html>

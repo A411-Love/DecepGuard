@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,6 +103,7 @@
                     <th>IP Address</th>
                     <th>Port</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -115,6 +115,17 @@
                         <td>{{ honeypot.ip_address }}</td>
                         <td>{{ honeypot.port }}</td>
                         <td class="status">{{ honeypot.status }}</td>
+                        <td>
+                            {% if current_user.role in ["admin", "analyst"] %}
+                                <a href="{{ url_for('honeypots.edit_honeypot', honeypot_id=honeypot.id) }}">Edit</a>
+                                <form method="POST" action="{{ url_for('honeypots.delete_honeypot', honeypot_id=honeypot.id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this honeypot?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            {% else %}
+                                View only
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
