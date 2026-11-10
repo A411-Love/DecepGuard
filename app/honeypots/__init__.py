@@ -21,6 +21,49 @@ def list_honeypots():
         honeypots=all_honeypots
     )
 
+@honeypots.route("/edit/<int:honeypot_id>", methods=["GET", "POST"])
+@role_required("admin", "analyst")
+def edit_honeypot(honeypot_id):
+
+    honeypot = db.get_or_404(Honeypot, honeypot_id)
+    form = HoneypotForm(obj=honeypot)
+
+    if form.validate_on_submit():
+
+        honeypot.name = form.name.data.strip()
+        honeypot.honeypot_type = form.honeypot_type.data
+        honeypot.ip_address = form.ip_address.data.strip()
+        honeypot.port = form.port.data
+        honeypot.description = form.description.data
+        honeypot.status = form.status.data
+
+        db.session.commit()
+
+        flash("Honeypot updated successfully!", "success")
+
+        return redirect(url_for("honeypots.list_honeypots"))
+
+    return render_template(
+        "honeypots/edit.html",
+        form=form,
+        honeypot=honeypot
+    )
+
+
+@honeypots.route("/delete/<int:honeypot_id>", methods=["POST"])
+@role_required("admin", "analyst")
+def delete_honeypot(honeypot_id):
+
+    honeypot = db.get_or_404(Honeypot, honeypot_id)
+
+    db.session.delete(honeypot)
+    db.session.commit()
+
+    flash("Honeypot deleted successfully!", "success")
+
+    return redirect(url_for("honeypots.list_honeypots"))
+
+
 
 @honeypots.route("/add", methods=["GET", "POST"])
 @role_required("admin", "analyst")
