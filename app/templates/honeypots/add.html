@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Honeypot | DecepGuard</title>
+</head>
+<body>
+
+    <h1>Register a New Honeypot</h1>
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(placeholder="SSH Decoy") }}
+            {% for error in form.name.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.honeypot_type.label }}<br>
+            {{ form.honeypot_type() }}
+        </p>
+
+        <p>
+            {{ form.ip_address.label }}<br>
+            {{ form.ip_address(placeholder="127.0.0.1") }}
+            {% for error in form.ip_address.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.port.label }}<br>
+            {{ form.port(placeholder="2222") }}
+            {% for error in form.port.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description(placeholder="Describe this honeypot") }}
+        </p>
+
+        <p>
+            {{ form.status.label }}<br>
+            {{ form.status() }}
+        </p>
+
+        {{ form.submit() }}
+
+    </form>
+
+    <p>
+        <a href="{{ url_for('honeypots.list_honeypots') }}">
+            Back to Honeypots
+        </a>
+    </p>
+
+</body>
+</html>

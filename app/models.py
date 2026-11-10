@@ -55,3 +55,50 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<User {self.username}>"
+
+
+class Honeypot(db.Model):
+
+    __tablename__ = "honeypots"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    honeypot_type = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    ip_address = db.Column(
+        db.String(45),
+        nullable=False
+    )
+
+    port = db.Column(
+        db.Integer,
+        nullable=False
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=True
+    )
+
+    status = db.Column(
+        db.String(20),
+        nullable=False,
+        default="inactive"
+    )
+
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    def __repr__(self):
+        return f"<Honeypot {self.name}>"

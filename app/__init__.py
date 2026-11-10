@@ -1,8 +1,9 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, app, render_template
 from sqlalchemy import URL
 from dotenv import load_dotenv
 
+from app import honeypots
 from app.extensions import db, login_manager, csrf
 
 def create_app():
@@ -30,6 +31,8 @@ def create_app():
     login_manager.login_view = "auth.login"
     from app.auth import auth
     app.register_blueprint(auth, url_prefix="/auth")
+    from app.honeypots import honeypots
+    app.register_blueprint(honeypots, url_prefix="/honeypots")
 
     @login_manager.user_loader
     def load_user(user_id):

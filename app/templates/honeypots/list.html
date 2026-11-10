@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honeypot Management | DecepGuard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f9fafb;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #22c55e;
+        }
+
+        .description {
+            color: #9ca3af;
+        }
+
+        a {
+            color: #22c55e;
+            text-decoration: none;
+        }
+
+        .add-button {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #1f2937;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        th {
+            color: #22c55e;
+        }
+
+        .status {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .message {
+            padding: 12px;
+            background: #14532d;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>DecepGuard</h1>
+    <h2>Honeypot Management</h2>
+
+    <p class="description">
+        Manage your deception technology assets.
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if current_user.role in ["admin", "analyst"] %}
+        <a class="add-button" href="{{ url_for('honeypots.add_honeypot') }}">
+            + Add New Honeypot
+        </a>
+    {% endif %}
+
+    {% if honeypots %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>IP Address</th>
+                    <th>Port</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for honeypot in honeypots %}
+                    <tr>
+                        <td>{{ honeypot.name }}</td>
+                        <td>{{ honeypot.honeypot_type }}</td>
+                        <td>{{ honeypot.ip_address }}</td>
+                        <td>{{ honeypot.port }}</td>
+                        <td class="status">{{ honeypot.status }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No honeypots have been registered yet.</p>
+    {% endif %}
+
+    <p style="margin-top: 30px;">
+        <a href="{{ url_for('auth.dashboard') }}">← Back to Dashboard</a>
+    </p>
+
+</div>
+</body>
+</html>
