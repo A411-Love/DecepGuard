@@ -102,3 +102,38 @@ class Honeypot(db.Model):
 
     def __repr__(self):
         return f"<Honeypot {self.name}>"
+class AttackEvent(db.Model):
+    __tablename__ = "attack_events"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    honeypot_id = db.Column(
+        db.Integer,
+        db.ForeignKey("honeypots.id"),
+        nullable=False
+    )
+
+    source_ip = db.Column(db.String(45), nullable=False)
+    source_port = db.Column(db.Integer, nullable=True)
+    destination_port = db.Column(db.Integer, nullable=False)
+
+    protocol = db.Column(db.String(20), nullable=False)
+    attack_type = db.Column(db.String(100), nullable=False)
+    severity = db.Column(db.String(20), nullable=False)
+
+    description = db.Column(db.Text, nullable=True)
+
+    event_source = db.Column(
+        db.String(20),
+        nullable=False,
+        default="simulated"
+    )
+
+    timestamp = db.Column(
+        db.DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False
+    )
+
+    def __repr__(self):
+        return f"<AttackEvent {self.attack_type} from {self.source_ip}>"

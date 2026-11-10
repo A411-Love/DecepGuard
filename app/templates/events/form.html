@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | DecepGuard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f9fafb;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+        }
+
+        h1 { color: #22c55e; }
+
+        input, select, textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-top: 6px;
+            background: #1f2937;
+            color: white;
+            border: 1px solid #4b5563;
+            border-radius: 5px;
+        }
+
+        label { font-weight: bold; }
+
+        .field { margin-bottom: 18px; }
+
+        button {
+            padding: 11px 18px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .error { color: #f87171; }
+        a { color: #22c55e; text-decoration: none; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>DecepGuard</h1>
+    <h2>{{ title }}</h2>
+
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        {% for field in [
+            form.honeypot_id,
+            form.source_ip,
+            form.source_port,
+            form.destination_port,
+            form.protocol,
+            form.attack_type,
+            form.severity,
+            form.description
+        ] %}
+            <div class="field">
+                {{ field.label }}
+                {{ field() }}
+
+                {% for error in field.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        {{ form.submit() }}
+    </form>
+
+    <p>
+        <a href="{{ url_for('events.list_events') }}">
+            ← Back to Attack Events
+        </a>
+    </p>
+
+</div>
+</body>
+</html>
