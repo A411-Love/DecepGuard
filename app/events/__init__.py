@@ -6,7 +6,9 @@ from flask import (
 from flask_login import login_required
 
 from app.extensions import db
-from app.models import AttackEvent, Honeypot
+import random
+
+from app.models import AttackEvent, Alert, Honeypot
 from app.auth.permissions import role_required
 from app.events.forms import AttackEventForm
 
@@ -55,6 +57,86 @@ def list_events():
         protocol=protocol,
         attack_type=attack_type
     )
+
+
+@events.route("/simulate", methods=["POST"])
+@role_required("admin", "analyst")
+def simulate_attack():
+
+    # Find active honeypots
+    honeypots = Honeypot.query.filter_by(status="active").all()
+
+    if not honeypots:
+        flash("No active honeypots found. Activate a honeypot first.", "warning")
+        return redirect(url_for("events.list_events"))
+
+    # Select a random active honeypot
+    honeypot = random.choice(honeypots)
+
+    # Sample attack scenarios
+    scenarios = [
+        {
+            "attack_type": "SSH Login Attempt",
+            "protocol": "SSH",
+            "port": 22,
+            "severity": "High",
+            "description": "Multiple suspicious SSH login attempts detected."
+        },
+        {
+            "attack_type": "Port Scanning",
+            "protocol": "TCP",
+            "port": 80,
+            "severity": "Medium",
+            "description": "A simulated source scanned the honeypot service."
+        },
+        {
+            "attack_type": "Brute Force Attempt",
+            "protocol": "SSH",
+            "port": 22,
+            "severity": "Critical",
+            "description": "Repeated password guessing activity detected."
+        },
+        {
+            "attack_type": "Suspicious HTTP Request",
+            "protocol": "HTTP",
+            "port": 80,
+            "severity": "Medium",
+            "description": "A suspicious HTTP request was sent to the honeypot."
+        }
+    ]
+
+    scenario = random.choice(scenarios)
+
+    # Generate a simulated attack event
+    event = AttackEvent(
+        honeypot_id=honeypot.id,
+        source_ip=f"192.0.2.{random.randint(1, 254)}",
+        source_port=random.randint(1024, 65535),
+        destination_port=scenario["port"],
+        protocol=scenario["protocol"],
+        attack_type=scenario["attack_type"],
+        severity=scenario["severity"],
+        description=scenario["description"],
+        event_source="simulated"
+    )
+
+    db.session.add(event)
+    db.session.flush()
+
+    # Automatically create an alert
+    alert = Alert(
+        attack_event_id=event.id,
+        title=f"{scenario['attack_type']} detected",
+        description=scenario["description"],
+        severity=scenario["severity"],
+        status="New"
+    )
+
+    db.session.add(alert)
+    db.session.commit()
+
+    flash("Simulated attack event and alert generated successfully!", "success")
+    return redirect(url_for("events.list_events"))
 
 
 @events.route("/add", methods=["GET", "POST"])

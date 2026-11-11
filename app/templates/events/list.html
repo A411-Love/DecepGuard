@@ -117,6 +117,12 @@
         <a class="add-button" href="{{ url_for('events.add_event') }}">
             + Add Attack Event
         </a>
+        <form method="POST" action="{{ url_for('events.simulate_attack') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">
+        Generate Simulated Attack
+    </button>
+</form>
     {% endif %}
 
     <form method="GET" class="filters">
