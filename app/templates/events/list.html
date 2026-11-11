@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attack Events | DecepGuard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f9fafb;
+            margin: 0;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1 { color: #22c55e; }
+
+        .description { color: #9ca3af; }
+
+        a {
+            color: #22c55e;
+            text-decoration: none;
+        }
+
+        .add-button {
+            display: inline-block;
+            background: #16a34a;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #1f2937;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        th { color: #22c55e; }
+
+        .message {
+            padding: 12px;
+            background: #14532d;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        input, select {
+            padding: 9px;
+            border-radius: 5px;
+            border: 1px solid #4b5563;
+            background: #1f2937;
+            color: white;
+        }
+
+        button {
+            padding: 9px 14px;
+            background: #16a34a;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .severity {
+            font-weight: bold;
+        }
+
+        .source {
+            color: #facc15;
+            font-size: 12px;
+        }
+
+        .actions {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>DecepGuard</h1>
+    <h2>Attack Event Management</h2>
+    <p class="description">
+        Monitor and manage suspicious activity recorded by your honeypots.
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if current_user.role in ["admin", "analyst"] %}
+        <a class="add-button" href="{{ url_for('events.add_event') }}">
+            + Add Attack Event
+        </a>
+    {% endif %}
+
+    <form method="GET" class="filters">
+
+        <input
+            type="text"
+            name="attack_type"
+            placeholder="Search attack type"
+            value="{{ attack_type }}"
+        >
+
+        <select name="severity">
+            <option value="">All Severities</option>
+            {% for level in ["Low", "Medium", "High", "Critical"] %}
+                <option value="{{ level }}"
+                    {% if severity == level %}selected{% endif %}>
+                    {{ level }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="protocol">
+            <option value="">All Protocols</option>
+            {% for item in ["TCP", "UDP", "HTTP", "HTTPS", "SSH"] %}
+                <option value="{{ item }}"
+                    {% if protocol == item %}selected{% endif %}>
+                    {{ item }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filter</button>
+        <a href="{{ url_for('events.list_events') }}">Clear</a>
+    </form>
+
+    {% if events %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Honeypot</th>
+                    <th>Source IP</th>
+                    <th>Destination Port</th>
+                    <th>Protocol</th>
+                    <th>Attack Type</th>
+                    <th>Severity</th>
+                    <th>Source</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for event in events %}
+                    <tr>
+                        <td>{{ event.timestamp.strftime("%Y-%m-%d %H:%M") }}</td>
+                        <td>{{ event.honeypot.name }}</td>
+                        <td>{{ event.source_ip }}</td>
+                        <td>{{ event.destination_port }}</td>
+                        <td>{{ event.protocol }}</td>
+                        <td>{{ event.attack_type }}</td>
+                        <td class="severity">{{ event.severity }}</td>
+                        <td class="source">{{ event.event_source }}</td>
+                        <td class="actions">
+                            {% if current_user.role in ["admin", "analyst"] %}
+                                <a href="{{ url_for('events.edit_event', event_id=event.id) }}">Edit</a>
+
+                                <form method="POST"
+                                      action="{{ url_for('events.delete_event', event_id=event.id) }}"
+                                      style="display:inline;"
+                                      onsubmit="return confirm('Delete this event?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            {% else %}
+                                View only
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No attack events found. Add a simulated event to get started.</p>
+    {% endif %}
+
+    <p style="margin-top: 30px;">
+        <a href="{{ url_for('auth.dashboard') }}">← Back to Dashboard</a>
+    </p>
+
+</div>
+</body>
+</html>

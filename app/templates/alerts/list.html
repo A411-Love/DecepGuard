@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alert Management | DecepGuard</title>
+    <style>
+        body {
+            background: #111827;
+            color: #e5e7eb;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        .container { max-width: 1200px; margin: auto; }
+        a, button { color: #4ade80; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background: #1f2937;
+        }
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid #374151;
+            text-align: left;
+        }
+        th { color: #4ade80; }
+        .action { display: inline; }
+        button {
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .add {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #166534;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .message { color: #4ade80; margin: 15px 0; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>DecepGuard</h1>
+    <h2>Alert Management</h2>
+    <p>Review and manage security alerts generated from attack events.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p class="message">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <a class="add" href="{{ url_for('alerts.add_alert') }}">+ Create Alert</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Attack Event</th>
+                <th>Severity</th>
+                <th>Status</th>
+                <th>Incident</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for alert in alerts %}
+            <tr>
+                <td>{{ alert.title }}</td>
+                <td>#{{ alert.attack_event_id }}</td>
+                <td>{{ alert.severity }}</td>
+                <td>{{ alert.status }}</td>
+                <td>
+                    {{ alert.incident.title if alert.incident else "Not linked" }}
+                </td>
+                <td>{{ alert.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td>
+                    {% if current_user.role in ["admin", "analyst"] %}
+                        <a href="{{ url_for('alerts.edit_alert', alert_id=alert.id) }}">Edit</a>
+                        <form class="action" method="POST"
+                              action="{{ url_for('alerts.delete_alert', alert_id=alert.id) }}"
+                              onsubmit="return confirm('Delete this alert?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    {% else %}
+                        View only
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">No alerts found. Create an alert to get started.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="{{ url_for('auth.dashboard') }}">← Back to Dashboard</a></p>
+</div>
+</body>
+</html>

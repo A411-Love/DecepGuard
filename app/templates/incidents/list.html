@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Incident Management | DecepGuard</title>
+    <style>
+        body {
+            background: #111827;
+            color: #e5e7eb;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+        }
+        .container { max-width: 1200px; margin: auto; }
+        a, button { color: #4ade80; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background: #1f2937;
+        }
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid #374151;
+            text-align: left;
+        }
+        th { color: #4ade80; }
+        .add {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #166534;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .action { display: inline; }
+        button {
+            background: transparent;
+            border: 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .message { color: #4ade80; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>DecepGuard</h1>
+    <h2>Incident Management</h2>
+    <p>Investigate, assign and track cybersecurity incidents.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <p class="message">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    {% if current_user.role in ["admin", "analyst"] %}
+        <a class="add" href="{{ url_for('incidents.add_incident') }}">
+            + Create Incident
+        </a>
+    {% endif %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Severity</th>
+                <th>Status</th>
+                <th>Assigned To</th>
+                <th>Related Alerts</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for incident in incidents %}
+            <tr>
+                <td>{{ incident.title }}</td>
+                <td>{{ incident.severity }}</td>
+                <td>{{ incident.status }}</td>
+                <td>
+                    {{ incident.assignee.username if incident.assignee else "Unassigned" }}
+                </td>
+                <td>{{ incident.alerts|length }}</td>
+                <td>{{ incident.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td>
+                    {% if current_user.role in ["admin", "analyst"] %}
+                        <a href="{{ url_for('incidents.edit_incident', incident_id=incident.id) }}">Edit</a>
+                    {% endif %}
+
+                    {% if current_user.role == "admin" %}
+                        <form class="action" method="POST"
+                              action="{{ url_for('incidents.delete_incident', incident_id=incident.id) }}"
+                              onsubmit="return confirm('Delete this incident?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    {% elif current_user.role == "viewer" %}
+                        View only
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">No incidents found. Create an incident to get started.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="{{ url_for('auth.dashboard') }}">← Back to Dashboard</a></p>
+</div>
+</body>
+</html>

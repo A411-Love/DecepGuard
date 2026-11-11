@@ -76,7 +76,7 @@ def add_event():
             protocol=form.protocol.data,
             attack_type=form.attack_type.data,
             severity=form.severity.data,
-            description=form.description.data.strip(),
+            description=(form.description.data or "").strip(),
             event_source="simulated"
         )
 
@@ -104,7 +104,7 @@ def edit_event(event_id):
         event.protocol = form.protocol.data
         event.attack_type = form.attack_type.data
         event.severity = form.severity.data
-        event.description = form.description.data.strip()
+        event.description = (form.description.data or "").strip()
 
         db.session.commit()
 
