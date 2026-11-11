@@ -47,6 +47,9 @@ def create_app():
     from app.incidents import incidents
     app.register_blueprint(incidents, url_prefix="/incidents")
 
+    from app.api import api
+    app.register_blueprint(api, url_prefix="/api")
+
     @login_manager.user_loader
     def load_user(user_id):
         from app.models import User
