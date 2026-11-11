@@ -48,6 +48,7 @@ def create_app():
     app.register_blueprint(incidents, url_prefix="/incidents")
 
     from app.api import api
+    csrf.exempt(api)
     app.register_blueprint(api, url_prefix="/api")
 
     @login_manager.user_loader
