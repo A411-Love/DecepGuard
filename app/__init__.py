@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template
 from sqlalchemy import URL
 from dotenv import load_dotenv
-
+from flask_login import login_required
 from app.extensions import db, login_manager, csrf
 
 
@@ -55,5 +55,48 @@ def create_app():
     @app.route("/")
     def home():
         return render_template("index.html")
+    
+    @app.route("/dashboard")
+    @login_required
+    def dashboard():
+        from app.models import Honeypot, AttackEvent, Alert, Incident
+
+        # Dashboard statistics
+        total_honeypots = Honeypot.query.count()
+        active_honeypots = Honeypot.query.filter_by(status="active").count()
+
+        total_events = AttackEvent.query.count()
+        total_alerts = Alert.query.count()
+
+        open_incidents = Incident.query.filter(
+            Incident.status.notin_(["Resolved", "Closed"])
+        ).count()
+
+        # Recent attack events
+        recent_events = AttackEvent.query.order_by(
+            AttackEvent.timestamp.desc()
+        ).limit(5).all()
+
+        # Attack severity statistics
+        severity_counts = {
+            "Low": AttackEvent.query.filter_by(severity="Low").count(),
+            "Medium": AttackEvent.query.filter_by(severity="Medium").count(),
+            "High": AttackEvent.query.filter_by(severity="High").count(),
+            "Critical": AttackEvent.query.filter_by(severity="Critical").count()
+        }
+
+        return render_template(
+            "dashboard.html",
+            total_honeypots=total_honeypots,
+            active_honeypots=active_honeypots,
+            total_events=total_events,
+            total_alerts=total_alerts,
+            open_incidents=open_incidents,
+            recent_events=recent_events,
+            severity_counts=severity_counts
+        )
+
+
+    
 
     return app
