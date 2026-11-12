@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 from flask_login import login_required
 from app import api
 from app.extensions import db, login_manager, csrf
+from flask import redirect, url_for
+
 
 
 def create_app():
@@ -58,7 +60,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return render_template("index.html")
+        return redirect(url_for("dashboard"))
     
     @app.route("/dashboard")
     @login_required
