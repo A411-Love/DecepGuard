@@ -1,9 +1,10 @@
 
 import os
-from flask import Flask, render_template
+from flask import Flask, app, render_template
 from sqlalchemy import URL
 from dotenv import load_dotenv
 from flask_login import login_required
+from app import api
 from app.extensions import db, login_manager, csrf
 
 
@@ -48,7 +49,6 @@ def create_app():
     app.register_blueprint(incidents, url_prefix="/incidents")
 
     from app.api import api
-    csrf.exempt(api)
     app.register_blueprint(api, url_prefix="/api")
 
     @login_manager.user_loader

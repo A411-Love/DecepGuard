@@ -4,13 +4,22 @@ from flask import Blueprint, jsonify, request
 from flask_login import login_required
 
 from app.extensions import db
-from app.models import Honeypot, AttackEvent, Alert
+from app.models import Honeypot, AttackEvent, Alert, Incident
 from app.auth.permissions import role_required
+from flask_wtf.csrf import generate_csrf
 
 api = Blueprint("api", __name__)
 
+# Generate a CSRF token for authenticated API requests
+@api.route("/csrf-token", methods=["GET"])
+@login_required
+def get_csrf_token():
+    return jsonify({
+        "csrf_token": generate_csrf()
+    }), 200
 
-# API Home
+
+# API Home  
 @api.route("/", methods=["GET"])
 @login_required
 def api_home():
@@ -22,6 +31,35 @@ def api_home():
             "/api/events",
             "/api/alerts"
         ]
+    }), 200
+
+# Get all incidents
+@api.route("/incidents", methods=["GET"])
+@login_required
+def get_incidents():
+
+    incidents = Incident.query.order_by(
+        Incident.created_at.desc()
+    ).all()
+
+    results = []
+
+    for incident in incidents:
+        results.append({
+            "id": incident.id,
+            "title": incident.title,
+            "description": incident.description,
+            "severity": incident.severity,
+            "status": incident.status,
+            "assigned_to": incident.assigned_to,
+            "resolution_notes": incident.resolution_notes,
+            "created_at": incident.created_at.isoformat(),
+            "updated_at": incident.updated_at.isoformat()
+        })
+
+    return jsonify({
+        "count": len(results),
+        "incidents": results
     }), 200
 
 
