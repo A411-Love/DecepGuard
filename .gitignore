@@ -8,6 +8,10 @@ __pycache__/
 .env.*
 !.env.example
 
+# Cowrie honeypot logs and private import checkpoint
+cowrie_logs/
+instance/cowrie_checkpoint.json
+
 .vscode/
 
 .pytest_cache/

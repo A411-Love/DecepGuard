@@ -72,6 +72,16 @@ def create_app():
         active_honeypots = Honeypot.query.filter_by(status="active").count()
 
         total_events = AttackEvent.query.count()
+
+        # Separate simulated and Cowrie events
+        simulated_events = AttackEvent.query.filter_by(
+            event_source="simulated"
+        ).count()
+
+        cowrie_events = AttackEvent.query.filter_by(
+            event_source="cowrie"
+        ).count()
+
         total_alerts = Alert.query.count()
 
         open_incidents = Incident.query.filter(
@@ -96,6 +106,8 @@ def create_app():
             total_honeypots=total_honeypots,
             active_honeypots=active_honeypots,
             total_events=total_events,
+            simulated_events=simulated_events,
+            cowrie_events=cowrie_events,
             total_alerts=total_alerts,
             open_incidents=open_incidents,
             recent_events=recent_events,

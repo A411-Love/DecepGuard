@@ -123,6 +123,13 @@
         Generate Simulated Attack
     </button>
 </form>
+
+<form method="POST" action="{{ url_for('events.import_cowrie') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">
+        Import Cowrie Events
+    </button>
+</form>
     {% endif %}
 
     <form method="GET" class="filters">

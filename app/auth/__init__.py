@@ -95,6 +95,15 @@ def dashboard():
     # Attack event statistics
     total_events = AttackEvent.query.count()
 
+    # Separate simulated and Cowrie events
+    simulated_events = AttackEvent.query.filter_by(
+        event_source="simulated"
+    ).count()
+
+    cowrie_events = AttackEvent.query.filter_by(
+        event_source="cowrie"
+    ).count()
+
     recent_events = AttackEvent.query.order_by(
         AttackEvent.timestamp.desc()
     ).limit(5).all()
@@ -117,6 +126,8 @@ def dashboard():
 
     return render_template(
         "dashboard.html",
+        simulated_events=simulated_events,
+        cowrie_events=cowrie_events,
         total_honeypots=total_honeypots,
         active_honeypots=active_honeypots,
         total_events=total_events,

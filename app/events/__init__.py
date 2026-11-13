@@ -11,6 +11,7 @@ import random
 from app.models import AttackEvent, Alert, Honeypot
 from app.auth.permissions import role_required
 from app.events.forms import AttackEventForm
+from app.cowrie.importer import import_cowrie_events
 
 
 events = Blueprint("events", __name__)
@@ -57,6 +58,30 @@ def list_events():
         protocol=protocol,
         attack_type=attack_type
     )
+
+
+@events.route("/import-cowrie", methods=["POST"])
+@role_required("admin", "analyst")
+def import_cowrie():
+    try:
+        imported = import_cowrie_events()
+
+        if imported:
+            flash(
+                f"Successfully imported {imported} Cowrie events and created alerts!",
+                "success"
+            )
+        else:
+            flash("No new Cowrie events to import.", "info")
+
+    except FileNotFoundError:
+        flash("Cowrie log file not found. Refresh the Cowrie log first.", "warning")
+
+    except Exception as error:
+        db.session.rollback()
+        flash(f"Cowrie import failed: {error}", "danger")
+
+    return redirect(url_for("events.list_events"))
 
 
 @events.route("/simulate", methods=["POST"])
