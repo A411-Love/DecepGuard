@@ -225,13 +225,20 @@ def edit_event(event_id):
     )
 
 
+
 @events.route("/delete/<int:event_id>", methods=["POST"])
 @role_required("admin", "analyst")
 def delete_event(event_id):
     event = db.get_or_404(AttackEvent, event_id)
 
+    # Delete alerts linked to this attack event first
+    Alert.query.filter_by(
+        attack_event_id=event.id
+    ).delete(synchronize_session=False)
+
+    # Now delete the attack event
     db.session.delete(event)
     db.session.commit()
 
-    flash("Attack event deleted successfully!", "success")
+    flash("Attack event and its linked alerts deleted successfully!", "success")
     return redirect(url_for("events.list_events"))

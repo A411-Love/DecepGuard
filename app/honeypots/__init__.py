@@ -50,11 +50,21 @@ def edit_honeypot(honeypot_id):
     )
 
 
+
 @honeypots.route("/delete/<int:honeypot_id>", methods=["POST"])
 @role_required("admin", "analyst")
 def delete_honeypot(honeypot_id):
 
     honeypot = db.get_or_404(Honeypot, honeypot_id)
+
+    # Preserve attack history linked to this honeypot.
+    if honeypot.attack_events:
+        flash(
+            "Cannot delete this honeypot because it has recorded attack events. "
+            "Deactivate it instead to preserve the attack history.",
+            "warning"
+        )
+        return redirect(url_for("honeypots.list_honeypots"))
 
     db.session.delete(honeypot)
     db.session.commit()
@@ -62,6 +72,7 @@ def delete_honeypot(honeypot_id):
     flash("Honeypot deleted successfully!", "success")
 
     return redirect(url_for("honeypots.list_honeypots"))
+
 
 
 

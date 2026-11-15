@@ -1,71 +1,312 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Register | DecepGuard</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 20px;
+            font-family: Arial, sans-serif;
+            background: #080f1c;
+            color: #e5e7eb;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 460px;
+            background: #111c2e;
+            border: 1px solid #26364d;
+            border-radius: 14px;
+            padding: 36px 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .brand h1 {
+            color: #38bdf8;
+            font-size: 30px;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .brand p {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .auth-heading {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .auth-heading h2 {
+            font-size: 23px;
+            margin-bottom: 8px;
+        }
+
+        .auth-heading p {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0b1423;
+            border: 1px solid #334155;
+            border-radius: 7px;
+            color: #f8fafc;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #38bdf8;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-input {
+            padding-right: 65px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #38bdf8;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            margin-top: 8px;
+            background: #16a34a;
+            border: none;
+            border-radius: 7px;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #15803d;
+        }
+
+        .flash-message,
+        .error-message {
+            padding: 10px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            background: #451a1a;
+            color: #fecaca;
+            border: 1px solid #7f1d1d;
+        }
+
+        .flash-message.success {
+            background: #14532d;
+            color: #bbf7d0;
+            border-color: #166534;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .login-link a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 28px 22px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <main>
+<div class="auth-container">
+
+    <div class="brand">
         <h1>DecepGuard</h1>
+        <p>Deception Technology and Honeypot Management Platform</p>
+    </div>
+
+    <div class="auth-heading">
         <h2>Create Your Account</h2>
+        <p>Register to access the DecepGuard platform.</p>
+    </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}
-                <p>{{ message }}</p>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ 'success' if category == 'success' else '' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.username.label }}
+            {{ form.username(
+                class="form-input",
+                placeholder="Choose a username",
+                autocomplete="username"
+            ) }}
+
+            {% for error in form.username.errors %}
+                <p class="error-message">{{ error }}</p>
             {% endfor %}
-        {% endwith %}
+        </div>
 
-        <form method="POST">
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(
+                class="form-input",
+                placeholder="Enter your email address",
+                autocomplete="email"
+            ) }}
 
-            {{ form.hidden_tag() }}
+            {% for error in form.email.errors %}
+                <p class="error-message">{{ error }}</p>
+            {% endfor %}
+        </div>
 
-            <div>
-                {{ form.username.label }}
-                {{ form.username(placeholder="Enter username") }}
+        <div class="form-group">
+            {{ form.password.label }}
 
-                {% for error in form.username.errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
+            <div class="password-wrapper">
+                {{ form.password(
+                    class="form-input",
+                    id="register-password",
+                    placeholder="Create a password",
+                    autocomplete="new-password"
+                ) }}
+
+                <button type="button"
+                        class="toggle-password"
+                        onclick="togglePassword('register-password', this)">
+                    Show
+                </button>
             </div>
 
-            <div>
-                {{ form.email.label }}
-                {{ form.email(placeholder="Enter email address") }}
+            {% for error in form.password.errors %}
+                <p class="error-message">{{ error }}</p>
+            {% endfor %}
+        </div>
 
-                {% for error in form.email.errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
+        <div class="form-group">
+            {{ form.confirm_password.label }}
+
+            <div class="password-wrapper">
+                {{ form.confirm_password(
+                    class="form-input",
+                    id="confirm-password",
+                    placeholder="Confirm your password",
+                    autocomplete="new-password"
+                ) }}
+
+                <button type="button"
+                        class="toggle-password"
+                        onclick="togglePassword('confirm-password', this)">
+                    Show
+                </button>
             </div>
 
-            <div>
-                {{ form.password.label }}
-                {{ form.password(placeholder="Enter password") }}
+            {% for error in form.confirm_password.errors %}
+                <p class="error-message">{{ error }}</p>
+            {% endfor %}
+        </div>
 
-                {% for error in form.password.errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
+        {{ form.submit(class="submit-btn", value="Create Account") }}
 
-            <div>
-                {{ form.confirm_password.label }}
-                {{ form.confirm_password(placeholder="Confirm password") }}
+    </form>
 
-                {% for error in form.confirm_password.errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
+    <div class="login-link">
+        Already have an account?
+        <a href="{{ url_for('auth.login') }}">Sign in</a>
+    </div>
 
-            {{ form.submit() }}
+    <div class="footer">
+        DecepGuard &copy; 2026 | Cybersecurity Management System
+    </div>
 
-        </form>
-    </main>
+</div>
+
+<script>
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+
+    if (input.type === "password") {
+        input.type = "text";
+        button.textContent = "Hide";
+    } else {
+        input.type = "password";
+        button.textContent = "Show";
+    }
+}
+</script>
 
 </body>
 </html>

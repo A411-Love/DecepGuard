@@ -1,59 +1,169 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Honeypot | DecepGuard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f9fafb;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #1f2937;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #22c55e;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #d1d5db;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 90px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #22c55e;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        button, input[type="submit"] {
+            background: #16a34a;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        button:hover, input[type="submit"]:hover {
+            background: #15803d;
+        }
+
+        .back-link {
+            margin-top: 25px;
+        }
+
+        a {
+            color: #22c55e;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
+<div class="container">
     <h1>Edit Honeypot</h1>
 
     <form method="POST">
         {{ form.hidden_tag() }}
 
-        <p>
-            {{ form.name.label }}<br>
+        <div class="form-group">
+            {{ form.name.label }}
             {{ form.name() }}
             {% for error in form.name.errors %}
-                <span>{{ error }}</span>
+                <span class="error-message">{{ error }}</span>
             {% endfor %}
-        </p>
+        </div>
 
-        <p>
-            {{ form.honeypot_type.label }}<br>
+        <div class="form-group">
+            {{ form.honeypot_type.label }}
             {{ form.honeypot_type() }}
-        </p>
+            {% for error in form.honeypot_type.errors %}
+                <span class="error-message">{{ error }}</span>
+            {% endfor %}
+        </div>
 
-        <p>
-            {{ form.ip_address.label }}<br>
+        <div class="form-group">
+            {{ form.ip_address.label }}
             {{ form.ip_address() }}
-        </p>
+            {% for error in form.ip_address.errors %}
+                <span class="error-message">{{ error }}</span>
+            {% endfor %}
+        </div>
 
-        <p>
-            {{ form.port.label }}<br>
+        <div class="form-group">
+            {{ form.port.label }}
             {{ form.port() }}
-        </p>
+            {% for error in form.port.errors %}
+                <span class="error-message">{{ error }}</span>
+            {% endfor %}
+        </div>
 
-        <p>
-            {{ form.description.label }}<br>
+        <div class="form-group">
+            {{ form.description.label }}
             {{ form.description() }}
-        </p>
+            {% for error in form.description.errors %}
+                <span class="error-message">{{ error }}</span>
+            {% endfor %}
+        </div>
 
-        <p>
-            {{ form.status.label }}<br>
+        <div class="form-group">
+            {{ form.status.label }}
             {{ form.status() }}
-        </p>
+            {% for error in form.status.errors %}
+                <span class="error-message">{{ error }}</span>
+            {% endfor %}
+        </div>
 
-        {{ form.submit() }}
+        {{ form.submit(value="Save Changes") }}
     </form>
 
-    <p>
+    <div class="back-link">
         <a href="{{ url_for('honeypots.list_honeypots') }}">
-            Back to Honeypots
+            ← Back to Honeypots
         </a>
-    </p>
+    </div>
+</div>
 
 </body>
 </html>

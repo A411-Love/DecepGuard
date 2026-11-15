@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DecepGuard{% endblock %}</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #e5e7eb;
+        }
+
+        .layout { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            background: #111827;
+            padding: 28px 18px;
+            border-right: 1px solid #263244;
+        }
+
+        .brand {
+            font-size: 23px;
+            font-weight: bold;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 35px;
+            line-height: 1.5;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #64748b;
+            margin: 25px 10px 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            display: block;
+            text-decoration: none;
+            color: #cbd5e1;
+            padding: 12px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .sidebar a:hover, .sidebar a.active {
+            background: #1e293b;
+            color: #38bdf8;
+        }
+
+        .logout-form { margin-top: 35px; }
+
+        .logout-btn {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #7f1d1d;
+            border-radius: 6px;
+            background: #451a1a;
+            color: #fecaca;
+            cursor: pointer;
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 { font-size: 26px; margin-bottom: 8px; }
+
+        .subtitle { color: #94a3b8; font-size: 14px; }
+
+        .user-info {
+            background: #172033;
+            border: 1px solid #263244;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .user-info span { color: #38bdf8; }
+
+        .created-by {
+            position: fixed;
+            bottom: 12px;
+            right: 18px;
+            color: #64748b;
+            font-size: 11px;
+            pointer-events: none;
+        }
+
+        .message {
+            padding: 12px;
+            background: #14532d;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .page-content {
+            background: #151f30;
+            border: 1px solid #263244;
+            border-radius: 10px;
+            padding: 22px;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 650px) {
+            .layout { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .main { padding: 20px; }
+            .created-by { position: static; text-align: right; padding: 12px; }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="brand">DecepGuard</div>
+        <div class="brand-subtitle">
+            Deception Technology and Honeypot Management Platform
+        </div>
+
+        <div class="nav-title">Main Menu</div>
+
+        <a href="{{ url_for('dashboard') }}"
+           class="{% if request.endpoint in ['dashboard', 'auth.dashboard'] %}active{% endif %}">Dashboard</a>
+
+        <a href="{{ url_for('honeypots.list_honeypots') }}"
+           class="{% if request.blueprint == 'honeypots' %}active{% endif %}">Honeypots</a>
+
+        <a href="{{ url_for('events.list_events') }}"
+           class="{% if request.blueprint == 'events' %}active{% endif %}">Attack Events</a>
+
+        <a href="{{ url_for('alerts.list_alerts') }}"
+           class="{% if request.blueprint == 'alerts' %}active{% endif %}">Alerts</a>
+
+        <a href="{{ url_for('incidents.list_incidents') }}"
+           class="{% if request.blueprint == 'incidents' %}active{% endif %}">Incidents</a>
+
+        <form class="logout-form" method="POST"
+              action="{{ url_for('auth.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="logout-btn" type="submit">Logout</button>
+        </form>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <div>
+                <h1>{% block page_heading %}DecepGuard{% endblock %}</h1>
+                <p class="subtitle">{% block page_subtitle %}Deception Technology and Honeypot Management Platform{% endblock %}</p>
+            </div>
+
+            <div class="user-info">
+                User: <span>{{ current_user.username }}</span>
+                &nbsp; | &nbsp;
+                Role: <span>{{ current_user.role }}</span>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<div class="created-by">Created by: Anush Deshar</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,21 +1,128 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Honeypot | DecepGuard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111827;
+            color: #f9fafb;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        h1.brand {
+            color: #22c55e;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            color: #f9fafb;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        p {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #f9fafb;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #374151;
+            background: #1f2937;
+            color: white;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 90px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #22c55e;
+        }
+
+        span {
+            color: #ef4444;
+            font-size: 12px;
+        }
+
+        button, input[type="submit"] {
+            background: #1f2937;
+            color: white;
+            padding: 11px;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        button:hover, input[type="submit"]:hover {
+            background: #374151;
+            border-color: #4b5563;
+        }
+
+        .back-link {
+            margin-top: 20px;
+        }
+
+        a {
+            color: #22c55e;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-    <h1>Register a New Honeypot</h1>
+<div class="container">
+    <h1 class="brand">DecepGuard</h1>
+    <h2>Register a New Honeypot</h2>
 
     <form method="POST">
-
         {{ form.hidden_tag() }}
 
         <p>
-            {{ form.name.label }}<br>
+            {{ form.name.label }}
             {{ form.name(placeholder="SSH Decoy") }}
             {% for error in form.name.errors %}
                 <span>{{ error }}</span>
@@ -23,12 +130,15 @@
         </p>
 
         <p>
-            {{ form.honeypot_type.label }}<br>
+            {{ form.honeypot_type.label }}
             {{ form.honeypot_type() }}
+            {% for error in form.honeypot_type.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
         </p>
 
         <p>
-            {{ form.ip_address.label }}<br>
+            {{ form.ip_address.label }}
             {{ form.ip_address(placeholder="127.0.0.1") }}
             {% for error in form.ip_address.errors %}
                 <span>{{ error }}</span>
@@ -36,7 +146,7 @@
         </p>
 
         <p>
-            {{ form.port.label }}<br>
+            {{ form.port.label }}
             {{ form.port(placeholder="2222") }}
             {% for error in form.port.errors %}
                 <span>{{ error }}</span>
@@ -44,24 +154,30 @@
         </p>
 
         <p>
-            {{ form.description.label }}<br>
+            {{ form.description.label }}
             {{ form.description(placeholder="Describe this honeypot") }}
+            {% for error in form.description.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
         </p>
 
         <p>
-            {{ form.status.label }}<br>
+            {{ form.status.label }}
             {{ form.status() }}
+            {% for error in form.status.errors %}
+                <span>{{ error }}</span>
+            {% endfor %}
         </p>
 
-        {{ form.submit() }}
-
+        {{ form.submit(value="Save Honeypot") }}
     </form>
 
-    <p>
+    <div class="back-link">
         <a href="{{ url_for('honeypots.list_honeypots') }}">
-            Back to Honeypots
+            ← Back to Honeypots
         </a>
-    </p>
+    </div>
+</div>
 
 </body>
 </html>

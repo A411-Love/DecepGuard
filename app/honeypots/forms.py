@@ -1,4 +1,6 @@
 
+import ipaddress
+
 from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
@@ -10,8 +12,16 @@ from wtforms import (
 from wtforms.validators import (
     DataRequired,
     Length,
-    NumberRange
+    NumberRange,
+    ValidationError
 )
+
+
+def validate_ip_address(form, field):
+    try:
+        ipaddress.ip_address(field.data.strip())
+    except ValueError:
+        raise ValidationError("Enter a valid IPv4 or IPv6 address.")
 
 
 class HoneypotForm(FlaskForm):
@@ -40,7 +50,8 @@ class HoneypotForm(FlaskForm):
         "IP Address",
         validators=[
             DataRequired(),
-            Length(max=45)
+            Length(max=45),
+            validate_ip_address
         ]
     )
 

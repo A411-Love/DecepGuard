@@ -1,139 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attack Events | DecepGuard</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #111827;
-            color: #f9fafb;
-            margin: 0;
-            padding: 35px;
-        }
+{% extends "base.html" %}
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-        }
+{% block title %}Attack Events | DecepGuard{% endblock %}
+{% block page_heading %}Attack Event Management{% endblock %}
+{% block page_subtitle %}Monitor and manage suspicious activity recorded by your honeypots.{% endblock %}
 
-        h1 { color: #22c55e; }
+{% block extra_css %}
+<style>
+.add-button {
+    display: inline-block;
+    background: #16a34a;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    text-decoration: none;
+}
 
-        .description { color: #9ca3af; }
+.event-action-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+}
 
-        a {
-            color: #22c55e;
-            text-decoration: none;
-        }
+.event-action-buttons form {
+    margin: 0;
+}
 
-        .add-button {
-            display: inline-block;
-            background: #16a34a;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 6px;
-            margin: 15px 0;
-        }
+.event-action-buttons button,
+.filters button,
+.delete-button {
+    padding: 9px 14px;
+    background: #16a34a;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #1f2937;
-        }
+.filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
 
-        th, td {
-            padding: 13px;
-            text-align: left;
-            border-bottom: 1px solid #374151;
-        }
+.filters input,
+.filters select {
+    padding: 9px;
+    border-radius: 5px;
+    border: 1px solid #4b5563;
+    background: #1f2937;
+    color: white;
+}
 
-        th { color: #22c55e; }
+.filters a {
+    color: #38bdf8;
+    align-self: center;
+}
 
-        .message {
-            padding: 12px;
-            background: #14532d;
-            border-radius: 6px;
-            margin: 10px 0;
-        }
+.events-table {
+    width: 100%;
+    min-width: 950px;
+    border-collapse: collapse;
+    background: #1f2937;
+}
 
-        .filters {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
+.events-table th,
+.events-table td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid #374151;
+}
 
-        input, select {
-            padding: 9px;
-            border-radius: 5px;
-            border: 1px solid #4b5563;
-            background: #1f2937;
-            color: white;
-        }
+.events-table th {
+    color: #38bdf8;
+}
 
-        button {
-            padding: 9px 14px;
-            background: #16a34a;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            cursor: pointer;
-        }
+.severity {
+    font-weight: bold;
+}
 
-        .severity {
-            font-weight: bold;
-        }
+.source {
+    color: #facc15;
+    font-size: 12px;
+}
 
-        .source {
-            color: #facc15;
-            font-size: 12px;
-        }
+.actions {
+    white-space: nowrap;
+}
 
-        .actions {
-            white-space: nowrap;
-        }
-    </style>
-</head>
+.actions a {
+    color: #38bdf8;
+    margin-right: 8px;
+}
 
-<body>
-<div class="container">
+.delete-button {
+    background: #991b1b;
+}
 
-    <h1>DecepGuard</h1>
-    <h2>Attack Event Management</h2>
-    <p class="description">
-        Monitor and manage suspicious activity recorded by your honeypots.
-    </p>
+.empty-message {
+    color: #9ca3af;
+    padding: 15px 0;
+}
+</style>
+{% endblock %}
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <div class="message">{{ message }}</div>
-        {% endfor %}
-    {% endwith %}
+{% block content %}
+<div class="page-content">
 
     {% if current_user.role in ["admin", "analyst"] %}
         <a class="add-button" href="{{ url_for('events.add_event') }}">
             + Add Attack Event
         </a>
-        <form method="POST" action="{{ url_for('events.simulate_attack') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit">
-        Generate Simulated Attack
-    </button>
-</form>
 
-<form method="POST" action="{{ url_for('events.import_cowrie') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit">
-        Import Cowrie Events
-    </button>
-</form>
+        <div class="event-action-buttons">
+            <form method="POST" action="{{ url_for('events.simulate_attack') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">Generate Simulated Attack</button>
+            </form>
+
+            <form method="POST" action="{{ url_for('events.import_cowrie') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit">Import Cowrie Events</button>
+            </form>
+        </div>
     {% endif %}
 
     <form method="GET" class="filters">
-
         <input
             type="text"
             name="attack_type"
@@ -166,7 +162,7 @@
     </form>
 
     {% if events %}
-        <table>
+        <table class="events-table">
             <thead>
                 <tr>
                     <th>Time</th>
@@ -200,8 +196,14 @@
                                       action="{{ url_for('events.delete_event', event_id=event.id) }}"
                                       style="display:inline;"
                                       onsubmit="return confirm('Delete this event?');">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                    <button type="submit">Delete</button>
+
+                                    <input type="hidden"
+                                           name="csrf_token"
+                                           value="{{ csrf_token() }}">
+
+                                    <button type="submit" class="delete-button">
+                                        Delete
+                                    </button>
                                 </form>
                             {% else %}
                                 View only
@@ -212,13 +214,10 @@
             </tbody>
         </table>
     {% else %}
-        <p>No attack events found. Add a simulated event to get started.</p>
+        <p class="empty-message">
+            No attack events found. Add a simulated event to get started.
+        </p>
     {% endif %}
 
-    <p style="margin-top: 30px;">
-        <a href="{{ url_for('auth.dashboard') }}">← Back to Dashboard</a>
-    </p>
-
 </div>
-</body>
-</html>
+{% endblock %}

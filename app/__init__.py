@@ -1,5 +1,6 @@
 
 import os
+from pprint import pp
 from flask import Flask, app, render_template
 from sqlalchemy import URL
 from dotenv import load_dotenv
@@ -16,6 +17,14 @@ def create_app():
     app = Flask(__name__)
 
     app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+    # Session and cookie security
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+    app.config["SESSION_COOKIE_SECURE"] = False  # Local HTTP testing only
+
+    # CSRF protection
+    app.config["WTF_CSRF_ENABLED"] = True
+    app.config["WTF_CSRF_TIME_LIMIT"] = 3600
 
     app.config["SQLALCHEMY_DATABASE_URI"] = URL.create(
         drivername="mysql+pymysql",
